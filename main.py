@@ -1,10 +1,9 @@
-from scrape_weather import WeatherScraper  # Import your WeatherProcessor class
+from scraper import run_scraper # Import your WeatherProcessor class
 from db_operations import DBOperations  # Import your DBOperations class
 
 def main():
     # Initialize the weather scraper and scrape the data
-    scraper = WeatherScraper()
-    weather_data = scraper.run()
+    weather_data = run_scraper()
 
     # Initialize the database operations
     db_ops = DBOperations()  # Assuming your database file is named 'weather.db'
