@@ -5,8 +5,6 @@
 from html.parser import HTMLParser
 import urllib.request
 from datetime import datetime
-from threading import Thread, Lock
-import logging
 
 class WeatherScraper(HTMLParser):
     def __init__(self):
@@ -93,64 +91,37 @@ class WeatherScraper(HTMLParser):
             return "Invalid date format"
         
     def scrape_weather_data(self, year, month):
+        self.stop_scraping = False  # Reset the flag
+        url = self.generate_url(year, month)
+        print(f"{month} - {year}")
+        
         try:
-            self.weather_data = {}  # Reset the data for each call
-            url = self.generate_url(year, month)
-            print(f"{month} - {year}")
             with urllib.request.urlopen(url) as response:
                 html = response.read().decode('utf-8')
             self.feed(html)
-        except Exception as e:
-            print(f"Error scraping weather data for {year}-{month}: {e}")
 
-        return self.weather_data
-        
-    def scrape_weather_data_thread(self, year, month, shared_data, lock, shared_flag, last_scraped_date):
-        try:
-            monthly_data = self.scrape_weather_data(year, month)
+            if self.final_end:
+                return self.weather_data
+
+            if self.stop_scraping or not self.in_table_body:
+                # Decrement month and year for backward scraping
+                month -= 1
+                if month < 1:
+                    month = 12
+                    year -= 1
+                return self.scrape_weather_data(year, month)  # Recursive call with updated date
+
             
-            with lock:
-                # Find the earliest date in the current scraping session
-                current_earliest_date = min(monthly_data.keys(), default=None)
 
-                # Compare with the last scraped date
-                if last_scraped_date['date'] == current_earliest_date:
-                    shared_flag['complete'] = True
-                else:
-                    shared_data.update(monthly_data)
-                    last_scraped_date['date'] = current_earliest_date  # Update the last scraped date
         except Exception as e:
-            print(f"Error scraping weather data for {year}-{month}: {e}")
-
-
+            print(f"Error scraping weather data: {e}")
+            return self.weather_data
 
     def generate_url(self, year, month):
         return f"https://climate.weather.gc.ca/climate_data/daily_data_e.html?StationID=27174&timeframe=2&StartYear=1840&EndYear=2018&Day=1&Year={year}&Month={month}"
 
-def run_scraper():
-    shared_weather_data = {}
-    lock = Lock()
-    threads = []
-    scraping_complete = {'complete': False}
-    last_scraped_date = {'date': None}  # Variable to track the earliest date of the last scraped data
+    def run(self):
+        year = self.current_year
+        month = self.current_month
 
-    current_year, current_month = datetime.now().year, datetime.now().month
-
-    while not scraping_complete['complete']:
-        scraper = WeatherScraper()
-        thread = Thread(target=scraper.scrape_weather_data_thread, args=(current_year, current_month, shared_weather_data, lock, scraping_complete, last_scraped_date))
-        threads.append(thread)
-        thread.start()
-
-        # Decrement the month and year if needed
-        if current_month == 1:
-            current_month = 12
-            current_year -= 1
-        else:
-            current_month -= 1
-
-    for thread in threads:
-        thread.join()
-        
-    sorted_weather_data = dict(sorted(shared_weather_data.items(), key=lambda item: item[0]))
-    return sorted_weather_data
+        return self.scrape_weather_data(year, month)
