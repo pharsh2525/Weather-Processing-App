@@ -1,5 +1,12 @@
-from scrape_weather import WeatherScraper # Import your WeatherProcessor class
+"""
+ Name: Harshkumar Patel & Brenan Hermann
+ Date: 16 November 2023
+ Project: Weather Processing App
+"""
+
+from scrape_weather import WeatherScraper  # Import your WeatherProcessor class
 from db_operations import DBOperations  # Import your DBOperations class
+
 
 def main():
     # Initialize the weather scraper and scrape the data
@@ -20,6 +27,7 @@ def main():
     # print("Fetched Data:")
     # for row in fetched_data:
     #     print(row)
+
 
 if __name__ == "__main__":
     main()

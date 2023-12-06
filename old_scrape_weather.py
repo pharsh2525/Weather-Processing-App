@@ -1,10 +1,13 @@
-# Name: Harshkumar Patel & Brenan Harman
-# Date: 16 November 2023
-# Project: Weather Processing App
+"""
+ Name: Harshkumar Patel & Brenan Hermann
+ Date: 16 November 2023
+ Project: Weather Processing App
+"""
 
 from html.parser import HTMLParser
 import urllib.request
 from datetime import datetime
+
 
 class WeatherScraper(HTMLParser):
     def __init__(self):
@@ -22,7 +25,7 @@ class WeatherScraper(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if self.stop_scraping:  # Stop processing if flag is set
             return
-        
+
         if tag == "tbody":
             self.in_table_body = True
 
@@ -59,14 +62,17 @@ class WeatherScraper(HTMLParser):
             if data and self.temp_data[self.td_count - 1] == '':
                 # Handle special notations or non-numeric parts
                 if "LegendM" in data:
-                    self.temp_data[self.td_count - 1] = None  # Set as None for 'LegendM'
+                    # Set as None for 'LegendM'
+                    self.temp_data[self.td_count - 1] = None
                 else:
                     # Extract numeric part from the data (e.g., "-1.8E" -> "-1.8")
-                    numeric_data = ''.join(filter(lambda x: x.isdigit() or x == '.' or x == '-', data))
+                    numeric_data = ''.join(
+                        filter(lambda x: x.isdigit() or x == '.' or x == '-', data))
                     # Check if the extracted data starts with a negative sign
                     if data.startswith('-') and not numeric_data.startswith('-'):
                         numeric_data = '-' + numeric_data
-                    self.temp_data[self.td_count - 1] = numeric_data if numeric_data else None
+                    self.temp_data[self.td_count -
+                                   1] = numeric_data if numeric_data else None
 
     def handle_endtag(self, tag):
         if tag == "tbody":
@@ -76,7 +82,8 @@ class WeatherScraper(HTMLParser):
             # Check if the date and temperature data are valid
             if self.current_date and len(self.temp_data) == 3:
                 # Create a dictionary for the day's temperatures
-                daily_temps = {"Max": self.temp_data[0], "Min": self.temp_data[1], "Mean": self.temp_data[2]}
+                daily_temps = {
+                    "Max": self.temp_data[0], "Min": self.temp_data[1], "Mean": self.temp_data[2]}
                 # Store it in the weather_data dictionary
                 self.weather_data[self.current_date] = daily_temps
 
@@ -89,12 +96,12 @@ class WeatherScraper(HTMLParser):
             return date_obj.strftime('%Y-%m-%d')
         except ValueError:
             return "Invalid date format"
-        
+
     def scrape_weather_data(self, year, month):
         self.stop_scraping = False  # Reset the flag
         url = self.generate_url(year, month)
         print(f"{month} - {year}")
-        
+
         try:
             with urllib.request.urlopen(url) as response:
                 html = response.read().decode('utf-8')
@@ -109,9 +116,8 @@ class WeatherScraper(HTMLParser):
                 if month < 1:
                     month = 12
                     year -= 1
-                return self.scrape_weather_data(year, month)  # Recursive call with updated date
-
-            
+                # Recursive call with updated date
+                return self.scrape_weather_data(year, month)
 
         except Exception as e:
             print(f"Error scraping weather data: {e}")

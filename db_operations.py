@@ -1,5 +1,5 @@
 """
- Name: Harshkumar Patel & Brenan Harman
+ Name: Harshkumar Patel & Brenan Hermann
  Date: 16 November 2023
  Project: Weather Processing App
 """
@@ -7,10 +7,12 @@
 import logging
 from dbcm import DBCM
 
+
 class DBOperations:
     """
     A class for database creation.
     """
+
     def __init__(self):
         self.db_name = "WeatherProcessor.db"
         self.initialize_db()
@@ -36,18 +38,49 @@ class DBOperations:
 
     def save_data(self, weather_data):
         """
-        Inserts data into the table
+        Inserts data into the table or updates it if the existing temperature data is NULL or an empty string.
         """
-        insert_query = '''
-            INSERT OR IGNORE INTO weather_data (sample_date, location, min_temp, max_temp, avg_temp)
-            VALUES (?, ?, ?, ?, ?)
-        '''
         with DBCM(self.db_name) as cursor:
             for date, data in weather_data.items():
-                # Assuming 'location' is a constant or obtained from somewhere
-                location = "Winnipeg"  
-                cursor.execute(insert_query, (date, location, data['Min'], data['Max'], data['Mean']))
-            logging.info("Data saved to database.")
+                # Skip insertion/update if any of the values are None
+                if None in data.values():
+                    logging.warning(
+                        f"Skipped insertion/update for {date} due to None values in data: {data}")
+                    continue
+
+                location = "Winnipeg"  # Assuming 'location' is a constant
+                try:
+                    # Check if the row exists and if the temperatures are NULL or empty strings
+                    cursor.execute('''
+                        SELECT min_temp, max_temp, avg_temp FROM weather_data
+                        WHERE sample_date = ? AND location = ?
+                    ''', (date, location))
+                    row = cursor.fetchone()
+
+                    # If row exists and any temperature is NULL or an empty string, update it
+                    if row and (row[0] is None or row[0] == '' or row[1] is None or row[1] == '' or row[2] is None or row[2] == ''):
+                        cursor.execute('''
+                            UPDATE weather_data
+                            SET min_temp = ?,
+                                max_temp = ?,
+                                avg_temp = ?
+                            WHERE sample_date = ? AND location = ? AND
+                                (min_temp IS NULL OR min_temp = '' OR
+                                max_temp IS NULL OR max_temp = '' OR
+                                avg_temp IS NULL OR avg_temp = '')
+                        ''', (data['Min'], data['Max'], data['Mean'], date, location))
+                        logging.info(f"Updated data for {date}.")
+                    # If row does not exist, insert it
+                    elif not row:
+                        cursor.execute('''
+                            INSERT INTO weather_data (sample_date, location, min_temp, max_temp, avg_temp)
+                            VALUES (?, ?, ?, ?, ?)
+                        ''', (date, location, data['Min'], data['Max'], data['Mean']))
+                        logging.info(f"Inserted data for {date}.")
+
+                except Exception as e:
+                    logging.error(
+                        f"Error saving or updating data for {date}: {e}")
 
     def fetch_data(self, start_date, end_date):
         """
