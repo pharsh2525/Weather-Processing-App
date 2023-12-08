@@ -25,6 +25,7 @@ class App(wx.App):
         """
 
         super().__init__(clearSigInt=True)
+        self.db_ops = DBOperations()
         self.init_frame()
 
     def init_frame(self):  # Renders window
@@ -46,7 +47,6 @@ class Frame(wx.Frame):
 
     def on_init(self):
         """Initialize the panel within the frame."""
-
         panel = Panel(parent=self)
 
 
@@ -57,6 +57,7 @@ class Panel(wx.Panel):
         """Initialize the panel and its widgets."""
 
         super().__init__(parent=parent)
+        self.db_ops = wx.GetApp().db_ops
         self.init_ui()
 
     def init_ui(self):
@@ -180,8 +181,7 @@ class Panel(wx.Panel):
     def check_database_for_data(self):
         """Check if there is any data in the database."""
 
-        db_name = 'WeatherProcessor.db'
-        with DBCM(db_name) as cursor:
+        with DBCM(self.db_ops.db_name) as cursor:
             cursor.execute("SELECT COUNT(*) FROM weather_data")
             return cursor.fetchone()[0] > 0
 
@@ -239,8 +239,7 @@ class Panel(wx.Panel):
     def fetch_years(self):
         """Fetches the earliest and latest years from the database."""
 
-        db_name = 'WeatherProcessor.db'
-        with DBCM(db_name) as cursor:
+        with DBCM(self.db_ops.db_name) as cursor:
             cursor.execute(
                 "SELECT MIN(strftime('%Y', sample_date)) FROM weather_data")
             earliest_year = cursor.fetchone()[0]

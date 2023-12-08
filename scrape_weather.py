@@ -8,7 +8,7 @@ from html.parser import HTMLParser
 import urllib.request
 from datetime import datetime
 from threading import Thread, Lock
-
+from db_operations import DBOperations
 from pyparsing import null_debug_action
 from dbcm import DBCM
 
@@ -29,6 +29,7 @@ class WeatherScraper(HTMLParser):
         self.final_end = False
         self.current_year = datetime.now().year
         self.current_month = datetime.now().month
+        self.db_ops = DBOperations()
 
     def handle_starttag(self, tag, attrs):
         if self.stop_scraping:  # Stop processing if flag is set
@@ -135,9 +136,7 @@ class WeatherScraper(HTMLParser):
         Check if data for a specific date already exists in the database.
         """
 
-        self.db_name = "WeatherProcessor.db"
-
-        with DBCM(self.db_name) as cursor:
+        with DBCM(self.db_ops.db_name) as cursor:
             cursor.execute(
                 'SELECT * FROM weather_data WHERE sample_date = ?', (date,))
             return cursor.fetchone() is not None

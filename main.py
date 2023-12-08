@@ -14,7 +14,7 @@ def main():
     weather_data = scraper.run()
 
     # Initialize the database operations
-    db_ops = DBOperations()  # Assuming your database file is named 'weather.db'
+    db_ops = DBOperations()
 
     # Save the scraped data to the database
     db_ops.save_data(weather_data)

@@ -25,3 +25,7 @@
 - Update database button working
 - Added boxplot generation
 - Users can now delete db, download a fresh set or update current db
+
+## Part 5 -> Packaging
+
+- Working installer

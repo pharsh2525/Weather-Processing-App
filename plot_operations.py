@@ -4,18 +4,21 @@
  Project: Weather Processing App
 """
 
+from dbcm import DBCM
+from datetime import datetime
+import calendar
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import calendar
-from datetime import datetime
-from dbcm import DBCM
+import matplotlib
+from db_operations import DBOperations
+matplotlib.use('TkAgg')  # Replace 'TkAgg' with your preferred backend
 
 
 class PlotOperations:
 
     def __init__(self):
         super().__init__()
-        self.db_name = "WeatherProcessor.db"
+        self.db_ops = DBOperations()
 
     def create_year_boxplot(self, startYear, endYear):
         """
@@ -28,7 +31,7 @@ class PlotOperations:
             Fetches weather data between startYear and endYear, organizes it by month,
             and calculates the mean temperature for each month.
             """
-            with DBCM(self.db_name) as cursor:
+            with DBCM(self.db_ops.db_name) as cursor:
                 for year in range(startYear, endYear + 1):
                     for month in range(1, 13):
                         cursor.execute('''
@@ -67,7 +70,7 @@ class PlotOperations:
             """
             Fetches daily weather data for a specific month and year.
             """
-            with DBCM(self.db_name) as cursor:
+            with DBCM(self.db_ops.db_name) as cursor:
                 start_date = f"{year}-{month:02d}-01"
                 end_date = f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}"
 

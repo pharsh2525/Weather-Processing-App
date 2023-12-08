@@ -6,6 +6,8 @@
 
 import logging
 from dbcm import DBCM
+import os
+import sys
 
 
 class DBOperations:
@@ -14,12 +16,21 @@ class DBOperations:
     """
 
     def __init__(self):
-        self.db_name = "WeatherProcessor.db"
+        # Determine if running as a script or frozen executable
+        if getattr(sys, 'frozen', False):
+            # If the application is run as a bundle, sys._MEIPASS is the path to the bundle
+            application_path = getattr(
+                sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        else:
+            # If the application is run as a script, the path is the current working directory
+            application_path = os.path.dirname(os.path.abspath(__file__))
+
+        self.db_name = os.path.join(application_path, "WeatherProcessor.db")
         self.initialize_db()
 
     def initialize_db(self):
         """
-        create table is its not already created.
+        Create table is its not already created.
         """
         create_table_query = '''
             CREATE TABLE IF NOT EXISTS weather_data (
@@ -32,9 +43,12 @@ class DBOperations:
                 UNIQUE(sample_date, location)
             );
         '''
-        with DBCM(self.db_name) as cursor:
-            cursor.execute(create_table_query)
-            logging.info("Database initialized.")
+        try:
+            with DBCM(self.db_name) as cursor:
+                cursor.execute(create_table_query)
+                logging.info("Database initialized at {}".format(self.db_name))
+        except Exception as e:
+            logging.error("Failed to initialize database: {}".format(e))
 
     def save_data(self, weather_data):
         """
