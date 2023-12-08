@@ -10,6 +10,7 @@ from datetime import datetime
 from threading import Thread, Lock
 
 from pyparsing import null_debug_action
+from dbcm import DBCM
 
 
 class WeatherScraper(HTMLParser):
@@ -129,11 +130,27 @@ class WeatherScraper(HTMLParser):
 
         return self.weather_data
 
+    def does_data_exist(self, date):
+        """
+        Check if data for a specific date already exists in the database.
+        """
+
+        self.db_name = "WeatherProcessor.db"
+
+        with DBCM(self.db_name) as cursor:
+            cursor.execute(
+                'SELECT * FROM weather_data WHERE sample_date = ?', (date,))
+            return cursor.fetchone() is not None
+
     def scrape_weather_data_thread(self, year, month, shared_data, lock, shared_flag, last_scraped_date):
         """
         Scrape weather data in a separate thread.
         """
         try:
+            if self.does_data_exist(f"{year}-{str(month).zfill(2)}-01"):
+                shared_flag['complete'] = True
+                return
+
             monthly_data = self.scrape_weather_data(year, month)
 
             with lock:

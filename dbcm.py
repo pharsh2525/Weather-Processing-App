@@ -1,5 +1,5 @@
 """
- Name: Harshkumar Patel & Brenan Hermann
+ Name: Harshkumar Patel & Brennan Hermann
  Date: 16 November 2023
  Project: Weather Processing App
 """
