@@ -219,7 +219,7 @@ class Panel(wx.Panel):
         plot_ops = PlotOperations()
         start_year = self.start_year_input.GetValue()
         end_year = self.end_year_input.GetValue()
-        plot_ops.create_boxplot(int(start_year), int(end_year))
+        plot_ops.create_year_boxplot(int(start_year), int(end_year))
 
     def on_month_box_plot(self, event):
         """Generate a line plot for daily temperatures of a specific month and year."""
@@ -227,7 +227,7 @@ class Panel(wx.Panel):
         plot_ops = PlotOperations()
         year = self.year_input.GetValue()
         month = self.month_input.GetValue()
-        plot_ops.create_monthly_line_plot(int(year), int(month))
+        plot_ops.create_month_line_plot(int(year), int(month))
 
     def update_years_label(self):
         """Update the label with available years in the database."""

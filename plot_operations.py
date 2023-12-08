@@ -17,7 +17,7 @@ class PlotOperations:
         super().__init__()
         self.db_name = "WeatherProcessor.db"
 
-    def create_boxplot(self, startYear, endYear):
+    def create_year_boxplot(self, startYear, endYear):
         """
         Creates a boxplot for the mean temperatures of each month from startYear to endYear.
         """
@@ -59,7 +59,7 @@ class PlotOperations:
 
         plt.show()
 
-    def create_monthly_line_plot(self, year, month):
+    def create_month_line_plot(self, year, month):
         """
         Creates a line plot for the daily temperatures of a specific month and year.
         """
