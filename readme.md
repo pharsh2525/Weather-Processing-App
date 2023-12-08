@@ -15,7 +15,7 @@
 
 ## Part 3 -> Plotting
 
-- (In progress)
+- Monthly boxplot working
 - Yearly boxplot working
 
 ## Part 4 -> UI
@@ -23,5 +23,5 @@
 - Installed wx
 - Created main frame
 - Update database button working
-
-* Need to change button and add other method features
+- Added boxplot generation
+- Users can now delete db, download a fresh set or update current db
