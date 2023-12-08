@@ -29,3 +29,4 @@
 ## Part 5 -> Packaging
 
 - Working installer
+- Outputs working exe
