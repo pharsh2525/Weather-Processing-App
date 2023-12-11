@@ -9,9 +9,9 @@ from datetime import datetime
 import calendar
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-# import matplotlib
+import matplotlib
 from db_operations import DBOperations
-# matplotlib.use('TkAgg')  # Replace 'TkAgg' with your preferred backend
+matplotlib.use('WXAgg')  # Replace 'TkAgg' with your preferred backend
 
 
 class PlotOperations:
