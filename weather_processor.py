@@ -1,14 +1,14 @@
 """
  Name: Harshkumar Patel & Brennan Hermann
- Date: 16 November 2023
+ Date: 5 December 2023
  Project: Weather Processing App
 """
 
 import threading
+# pylint: disable=no-member
 import wx
 from main import main
 from dbcm import DBCM
-import logging
 from db_operations import DBOperations
 from plot_operations import PlotOperations
 
@@ -47,7 +47,7 @@ class Frame(wx.Frame):
 
     def on_init(self):
         """Initialize the panel within the frame."""
-        panel = Panel(parent=self)
+        _ = Panel(parent=self)
 
 
 class Panel(wx.Panel):
@@ -63,7 +63,7 @@ class Panel(wx.Panel):
     def init_ui(self):
         """Initialize user interface components and layout."""
 
-        # Year boxplot
+        # Year to year boxplot
         self.boxplot_options = wx.StaticText(
             self, label="Generate box plot of years:", pos=(22, 10))
 
@@ -77,8 +77,8 @@ class Panel(wx.Panel):
         self.end_year_input = wx.TextCtrl(
             self, size=(34, 16), style=wx.NO_BORDER, pos=(85, 51))
 
-        self.start_year_input.SetHint("####")
-        self.end_year_input.SetHint("####")
+        self.start_year_input.SetHint("YYYY")
+        self.end_year_input.SetHint("YYYY")
 
         self.start_year_input.SetMaxLength(4)
         self.end_year_input.SetMaxLength(4)
@@ -90,7 +90,7 @@ class Panel(wx.Panel):
             parent=self, label="Generate ", pos=(20, 70))
         self.year_boxplot_button.Bind(wx.EVT_BUTTON, self.on_year_box_plot)
 
-        # Month boxplot
+        # Year month boxplot
         self.boxplot_options2 = wx.StaticText(
             self, label="Generate box plot of a month in year:", pos=(180, 10))
 
@@ -102,10 +102,10 @@ class Panel(wx.Panel):
         self.month_label = wx.StaticText(
             self, label="Month:", pos=(180, 50))
         self.month_input = wx.TextCtrl(
-            self, size=(17, 16), style=wx.NO_BORDER, pos=(245, 51))
+            self, size=(28, 16), style=wx.NO_BORDER, pos=(245, 51))
 
-        self.year_input.SetHint("####")
-        self.month_input.SetHint("##")
+        self.year_input.SetHint("YYYY")
+        self.month_input.SetHint("MM")
 
         self.year_input.SetMaxLength(4)
         self.month_input.SetMaxLength(2)
@@ -126,7 +126,7 @@ class Panel(wx.Panel):
             parent=self, label="Purge weather data", pos=(20, 205))
 
         self.years_label = wx.StaticText(
-            self, label="", pos=(25, 150))
+            self, label="", pos=(20, 155))
         self.update_years_label()
 
         self.status_text = wx.StaticText(
@@ -139,8 +139,11 @@ class Panel(wx.Panel):
         self.download_button.Bind(wx.EVT_BUTTON, self.on_download_database)
         self.purge_button.Bind(wx.EVT_BUTTON, self.on_purge_data)
 
-    def on_download_database(self, event):
-        """Handle the event to download data from the database."""
+    def on_download_database(self, _):
+        """Handle the event to download data from the database.
+
+        The 'event' parameter is required by wxPython event handling but is not used in this method.
+        """
 
         self.reset_status_text()
         self.status_text.SetLabel("Downloading... May take a few minutes")
@@ -154,8 +157,11 @@ class Panel(wx.Panel):
         self.update_years_label()
         wx.CallAfter(self.status_text.SetLabel, "Weather data downloaded.")
 
-    def on_update_database(self, event):
-        """Handle the event to update data in the database."""
+    def on_update_database(self, _):
+        """Handle the event to update data in the database.
+
+        The 'event' parameter is required by wxPython event handling but is not used in this method.
+        """
 
         self.reset_status_text()
         self.status_text.SetLabel("Updating...")
@@ -192,13 +198,20 @@ class Panel(wx.Panel):
             self.download_button.Hide()
             self.update_button.Show()
             self.purge_button.Enable(True)
+            self.year_boxplot_button.Enable(True)
+            self.month_boxplot_button.Enable(True)
         else:
             self.update_button.Hide()
             self.download_button.Show()
             self.purge_button.Enable(False)
+            self.year_boxplot_button.Enable(False)
+            self.month_boxplot_button.Enable(False)
 
-    def on_purge_data(self, event):
-        """Handle the event to purge data from the database."""
+    def on_purge_data(self, _):
+        """Handle the event to purge data from the database.
+
+        The 'event' parameter is required by wxPython event handling but is not used in this method.
+        """
 
         self.reset_status_text()
         db_ops = DBOperations()
@@ -213,16 +226,22 @@ class Panel(wx.Panel):
         self.status_text.SetLabel("")
         self.purge_text.SetLabel("")
 
-    def on_year_box_plot(self, event):
-        """Generate a box plot for the specified range of years."""
+    def on_year_box_plot(self, _):
+        """Generate a box plot for the specified range of years.
+
+        The 'event' parameter is required by wxPython event handling but is not used in this method.
+        """
 
         plot_ops = PlotOperations()
         start_year = self.start_year_input.GetValue()
         end_year = self.end_year_input.GetValue()
         plot_ops.create_year_boxplot(int(start_year), int(end_year))
 
-    def on_month_box_plot(self, event):
-        """Generate a line plot for daily temperatures of a specific month and year."""
+    def on_month_box_plot(self, _):
+        """Generate a line plot for daily temperatures of a specific month and year.
+
+        The 'event' parameter is required by wxPython event handling but is not used in this method.
+        """
 
         plot_ops = PlotOperations()
         year = self.year_input.GetValue()

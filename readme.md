@@ -10,13 +10,13 @@
 
 - Tables are setup
 - Data is successfully saved in database
-- Updates any null data with api data
 - Reseeds db when purge used
 
 ## Part 3 -> Plotting
 
 - Monthly boxplot working
 - Yearly boxplot working
+- Improved code
 
 ## Part 4 -> UI
 
@@ -25,8 +25,25 @@
 - Update database button working
 - Added boxplot generation
 - Users can now delete db, download a fresh set or update current db
+- Buttons gray out when no data
 
 ## Part 5 -> Packaging
 
 - Working installer
 - Outputs working exe
+- License & Icon added
+
+## Part 6 -> Additional Requirements
+
+- Follows PEP8 standards
+- Every method is commented
+- No logging yet in UI
+
+## Part 7 -> Bonus (optional)
+
+- Nice GUI
+- Everything is aligned nicely
+- Not scalable
+- +1 proud
+- Boxplots open in their own window
+- Threading is implemented in Scrapper

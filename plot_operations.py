@@ -9,9 +9,9 @@ from datetime import datetime
 import calendar
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import matplotlib
+# import matplotlib
 from db_operations import DBOperations
-matplotlib.use('TkAgg')  # Replace 'TkAgg' with your preferred backend
+# matplotlib.use('TkAgg')  # Replace 'TkAgg' with your preferred backend
 
 
 class PlotOperations:
@@ -26,27 +26,23 @@ class PlotOperations:
         """
         weatherData = {month: [] for month in range(1, 13)}
 
-        def fetch_and_process_data(startYear, endYear):
-            """
-            Fetches weather data between startYear and endYear, organizes it by month,
-            and calculates the mean temperature for each month.
-            """
-            with DBCM(self.db_ops.db_name) as cursor:
-                for year in range(startYear, endYear + 1):
-                    for month in range(1, 13):
-                        cursor.execute('''
-                            SELECT AVG(avg_temp) FROM weather_data
-                            WHERE sample_date BETWEEN ? AND ? AND strftime('%m', sample_date) = ?
-                        ''', (f'{year}-{month:02d}-01', f'{year}-{month:02d}-31', f'{month:02d}'))
-                        result = cursor.fetchone()
-                        if result and result[0] is not None:
-                            weatherData[month].append(result[0])
+        for year in range(startYear, endYear + 1):
+            for month in range(1, 13):
+                start_date = f"{year}-{month:02d}-01"
+                end_date = f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}"
+                monthly_data = self.db_ops.fetch_data(start_date, end_date)
 
-        fetch_and_process_data(startYear, endYear)
+                # Extract the avg_temp values
+                monthly_avg_temps = [temp[3]
+                                     for temp in monthly_data if temp[3] is not None]
+                if monthly_avg_temps:
+                    month_avg = sum(monthly_avg_temps) / len(monthly_avg_temps)
+                    weatherData[month].append(month_avg)
 
         plt.figure()
         plt.title(
             f'Monthly Mean Temperature Distribution from {startYear} to {endYear}')
+
         plt.xlabel('Month')
         plt.ylabel('Mean Temperature (Celsius)')
 
@@ -57,46 +53,37 @@ class PlotOperations:
         plt.boxplot(data, showfliers=True)
 
         # Define the x-axis labels as months
-        plt.xticks(range(1, 13), ['Jan', 'Feb', 'Mar', 'Apr',
-                   'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
-
+        plt.xticks(range(1, 13), calendar.month_abbr[1:13])
         plt.show()
 
     def create_month_line_plot(self, year, month):
         """
         Creates a line plot for the daily temperatures of a specific month and year.
         """
-        def fetch_daily_data(year, month):
-            """
-            Fetches daily weather data for a specific month and year.
-            """
-            with DBCM(self.db_ops.db_name) as cursor:
-                start_date = f"{year}-{month:02d}-01"
-                end_date = f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}"
+        # Prepare start and end dates for the query
+        start_date = f"{year}-{month:02d}-01"
+        end_date = f"{year}-{month:02d}-{calendar.monthrange(year, month)[1]}"
 
-                cursor.execute('''
-                    SELECT sample_date, avg_temp FROM weather_data
-                    WHERE sample_date BETWEEN ? AND ?
-                    ORDER BY sample_date
-                ''', (start_date, end_date))
-                return cursor.fetchall()
+        # Fetch data from the database
+        monthly_data = self.db_ops.fetch_data(start_date, end_date)
 
-        daily_data = fetch_daily_data(year, month)
-
-        # Make sure there's data to plot
-        if not daily_data:
+        # Check if data is available
+        if not monthly_data:
             print(f"No data found for {year}-{month}.")
             return
 
         # Separate the data into dates and temperatures
-        dates = [mdates.date2num(datetime.strptime(
-            row[0], '%Y-%m-%d').date()) for row in daily_data]
+        dates = [datetime.strptime(row[1], '%Y-%m-%d')
+                 for row in monthly_data if row[3] is not None]
+        temperatures = [row[3] for row in monthly_data if row[3] is not None]
 
-        temperatures = [row[1] for row in daily_data]
+        # Convert dates for matplotlib
+        dates = mdates.date2num(dates)
 
         # Create the plot
         plt.figure(figsize=(10, 5))
-        # 'o' to mark the data points
+
+        # '.' to mark the data points
         plt.plot(dates, temperatures, marker='.')
 
         # Format the x-axis to show dates nicely
