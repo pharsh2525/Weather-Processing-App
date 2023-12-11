@@ -2,15 +2,15 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Weather Processing App"
-#define MyAppVersion "1.6"
+#define MyAppVersion "2.0"
 #define MyAppPublisher "Brennan Hermann & Harshkumar Patel"
-#define MyAppURL "https://github.com/pharsh2525/Weather-Processing-App/"
+#define MyAppURL "https://github.com/pharsh2525/Weather-Processing-App"
 #define MyAppExeName "weather_processor.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{7101061F-76C9-4B18-BABC-031BFA46F72B}
+AppId={{86F8643E-E105-4347-AA72-8981707829BC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -20,12 +20,12 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=C:\Users\Brennan\Desktop\School\RRC\2023 Term 5\Intro into Python\Weather-Processing-App\dist\license.txt
+LicenseFile=C:\Users\Brennan\Desktop\School\RRC\2023 Term 5\Intro into Python\Weather-Processing-App\dist\Package setup\license.txt
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\Brennan\Desktop\School\RRC\2023 Term 5\Intro into Python\Weather-Processing-App\dist
 OutputBaseFilename=WeatherProcessorSetup
-SetupIconFile=C:\Users\Brennan\Desktop\School\RRC\2023 Term 5\Intro into Python\Weather-Processing-App\dist\icon.ico
+SetupIconFile=C:\Users\Brennan\Desktop\School\RRC\2023 Term 5\Intro into Python\Weather-Processing-App\dist\Package setup\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
