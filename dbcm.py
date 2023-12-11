@@ -1,5 +1,12 @@
+"""
+ Name: Harshkumar Patel & Brennan Hermann
+ Date: 16 November 2023
+ Project: Weather Processing App
+"""
+
 import sqlite3
 import logging
+
 
 class DBCM:
     def __init__(self, db_name):
@@ -20,4 +27,3 @@ class DBCM:
             else:
                 self.conn.commit()
             self.conn.close()
-
