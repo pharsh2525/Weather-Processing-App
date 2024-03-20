@@ -39,11 +39,10 @@
 - Every method is commented
 - No logging yet in UI
 
-## Part 7 -> Bonus (optional)
+## Part 7
 
 - Nice GUI
 - Everything is aligned nicely
 - Not scalable
-- +1 proud
 - Boxplots open in their own window
 - Threading is implemented in Scrapper
